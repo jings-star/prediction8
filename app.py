@@ -2,14 +2,11 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# Load the trained model
 model = joblib.load('heart_failure_model.joblib')
 
-# Define the input form
-st.title("Heart Disease Prediction App")
-st.write("Enter patient details to predict the possibility of heart disease")
+st.title("Heart Failure Prediction App")
+st.write("Enter patient details to predict heart failure")
 
-# Create the input fields arranged according to the specified order
 col1, col2, col3 = st.columns(3)
 
 with col1:
@@ -28,11 +25,9 @@ with col3:
     oldpeak = st.number_input("Old Peak", min_value=0.0, max_value=10.0, value=1.0)
     st_Slope = st.selectbox("ST Slope", ["Up", "Flat", "Down"])
 
-# Prepare the input data for prediction
 input_data = pd.DataFrame([[sex, chestPainType, restingBP, cholesterol, fastingBS, restingECG, maxHR, exerciseAngina, oldpeak, st_Slope]],
                           columns=['Sex', 'ChestPainType', 'RestingBP', 'Cholesterol', 'FastingBS', 'RestingECG', 'MaxHR', 'ExerciseAngina', 'Oldpeak', 'ST_Slope'])
 
-# Encode the categorical variables
 def preprocess_input(data):
     data['Sex'] = 1 if data['Sex'][0] == 'Male' else 0
     data['ChestPainType'] = {'ATA': 0, 'NAP': 1, 'ASY': 2, 'TA': 3}[data['ChestPainType'][0]]
@@ -45,16 +40,14 @@ def preprocess_input(data):
     
     return data
 
-# Preprocess input data
 input_data = preprocess_input(input_data)
 
-# Predict Button
 if st.button('Predict'):
     try:
         prediction = model.predict(input_data)
         if prediction[0] == 0:
-            st.write("The model predicts **No Heart Disease**.")
+            st.write("The patient is not likely to have heart disease!.")
         else:
-            st.write("The model predicts **Heart Disease**.")
+            st.write("The patient is  likely to have heart disease!.")
     except Exception as e:
         st.error(f"Error during prediction: {e}")
